@@ -52,7 +52,7 @@ public class Driver {
 						printUsageAndExit();
 					}
 				} else {
-					m.generateMaze();
+					m.generateMaze(-1);
 				}
 				
 				m.printMaze();

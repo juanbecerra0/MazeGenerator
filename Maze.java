@@ -60,9 +60,13 @@ public class Maze {
 	 * 
 	 * No seed used
 	 */
-	public void generateMaze() {
+	public void generateMaze(int seed) {
 		//	Instantiates random object
-		rand = new Random();
+		if(seed == -1) {
+			rand = new Random();
+		} else {
+			rand = new Random(seed);
+		}
 		
 		//	Determine and set the starting point (Top left of grid)
 		startX = rand.nextInt(x/4);
@@ -108,20 +112,6 @@ public class Maze {
 		//	Generate dead-ends
 		generateDeadEnds(startX, startY);
 		
-	}
-	
-	/**
-	 * Randomly generates a maze with a beginning and end
-	 * 
-	 * Seed is used
-	 * 
-	 * @param seed
-	 */
-	public void generateMaze(int seed) {
-		// Instantiates random SEEDED object
-		rand = new Random(seed);
-		
-		//	TODO
 	}
 	
 	/**
