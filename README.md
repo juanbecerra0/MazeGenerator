@@ -6,6 +6,4 @@ optional seed value.
 This is to be used in my game, Revenants: The Endless Dungeon to create procedurely-generated levels.
 This project will later be translated to C++.
 
-Currently, there are two main issues to address:
-  - Exception handling in the driver
-  - Null-pointers when generating dead-end paths
+Currently, the main maze generator is being refactored to account for null-pointer exceptions.
