@@ -17,45 +17,57 @@ public class Driver {
 	 */
 	public static void main(String[] args) {
 		try {
-			if (args.length == 2 || args.length == 3) {
+			if (args.length == 3 || args.length == 4) {
 				//	Variables
 				int x = -1;
 				int y = -1;
-				Maze m;
+				Maze m = null;
 				
 				//	Parse x value
-				if(Integer.valueOf(args[0]) > 1) {
+				if(Integer.valueOf(args[0]) >= 4) {
 					x = Integer.valueOf(args[0]);
 				} else {
-					System.err.println("ERROR: X value must be greater than 1. You entered " + Integer.valueOf(args[0]));
+					System.err.println("ERROR: X value must be at least 4. You entered " + Integer.valueOf(args[0]));
 					printUsageAndExit();
 				}
 				
 				//	Parse y value
-				if(Integer.valueOf(args[1]) > 1) {
+				if(Integer.valueOf(args[1]) >= 4) {
 					y = Integer.valueOf(args[1]);
 				} else {
-					System.err.println("ERROR: Y value must be greater than 1. You entered " + Integer.valueOf(args[1]));
+					System.err.println("ERROR: Y value must be at least 4. You entered " + Integer.valueOf(args[1]));
 					printUsageAndExit();
 				}
 				
 				//	Create intArray and Maze object
 				int[][] intArray = new int[x][y];
-				m = new Maze(intArray);
 				
-				//	Parse optional seed value or generate maze without seed
-				if(args.length == 3) {
-					if(Integer.valueOf(args[2]) > 0) {
-						m.generateMaze(Integer.valueOf(args[2]));
+				//	Parse treasure chance
+				if(Double.valueOf(args[2]) >= 0 || Double.valueOf(args[2]) <= 1) {
+					
+				} else {
+					System.err.println("ERROR: Treasure rate must be a decimal value between 0 and 1 (inclusive). You entered " + Integer.valueOf(args[2]));
+					printUsageAndExit();
+				}
+				
+				//	Parse optional seed value or create maze without seed
+				if(args.length == 4) {
+					if(Integer.valueOf(args[3]) > 0) {
+						m = new Maze(intArray, Double.valueOf(args[2]), Integer.valueOf(args[3]));
 					} else {
-						System.err.println("ERROR: Seed value must be greater than 0. You entered " + Integer.valueOf(args[2]));
+						System.err.println("ERROR: Seed value must be greater than 0. You entered " + Integer.valueOf(args[3]));
 						printUsageAndExit();
 					}
 				} else {
-					m.generateMaze(-1);
+					m = new Maze(intArray, Double.valueOf(args[2]), -1);
 				}
 				
+				//	Generate the maze
+				m.generateMaze();
+				
+				//	Print maze to console 
 				m.printMaze();
+				
 			} else {
 				System.err.println("ERROR: Your argument length must either be 2 or 3. Your argument length was " + args.length);
 				printUsageAndExit();
@@ -74,7 +86,7 @@ public class Driver {
 	 * Used for invalid arguments/propagated exceptions in Maze.java
 	 */
 	private static void printUsageAndExit() {
-		System.err.println("Usage: java Driver <x dimensions> <y dimensions> <OPTIONAL: seed value>");
+		System.err.println("Usage: java Driver <x dimensions> <y dimensions> <treasure rate> <OPTIONAL: seed value>");
 		System.exit(1);
 	}
 	

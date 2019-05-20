@@ -23,24 +23,23 @@ public class Maze {
 	//	Maze array
 	private int[][] maze;
 	
+	//	Random object
+	private Random rand;
+	
+	//	Chance of a point becoming a "treasure" point
+	private double treasureChance;
+	
 	//	Maze linked list of points
 	private LinkedList<Point> path;
 	private Iterator<Point> it;
-	
-	//	Random object
-	private Random rand;
 	
 	//	Size of array
 	private int x;
 	private int y;
 	
-	//	Starting points
-	private int startX;
-	private int startY;
-	
-	//	Ending points
-	private int endX;
-	private int endY;
+	//	Starting and ending points
+	private Point startPoint;
+	private Point endPoint;
 	
 	/**
 	 * Constructor
@@ -49,44 +48,83 @@ public class Maze {
 	 * 
 	 * @param maze
 	 */
-	public Maze(int[][] maze) {
+	public Maze(int[][] maze, double treasureChance, int seed) {
 		this.maze = maze;
+		this.treasureChance = treasureChance;
 		x = maze.length;
 		y = maze[0].length;
-	}
-	
-	/**
-	 * Randomly generates a maze with a beginning and end
-	 * 
-	 * No seed used
-	 */
-	public void generateMaze(int seed) {
-		//	Instantiates random object
+		
+		//		Instantiates random object
 		if(seed == -1) {
 			rand = new Random();
 		} else {
 			rand = new Random(seed);
 		}
-		
+	}
+	
+	/**
+	 * Randomly generates a maze with a beginning and end
+	 * 
+	 * Accepts a seed value, but is completely random if seed == -1
+	 */
+	public void generateMaze() {
 		//	Determine and set the starting point (Top left of grid)
-		startX = rand.nextInt(x/4);
-		startY = rand.nextInt(y/4);
-		maze[startX][startY] = 2;
+		startPoint = new Point(rand.nextInt(x/4), rand.nextInt(y/4));
 		
 		//	Determine and set the ending point (Bottom right of grid)
-		endX = (x - 1) - rand.nextInt(x/4);
-		endY = (y - 1) - rand.nextInt(y/4);
-		maze[endX][endY] = 3;
+		endPoint = new Point((x - 1) - rand.nextInt(x/4), (y - 1) - rand.nextInt(y/4));
+		
+		//	Create a linked list of coordinate points for true path (used for dead-end generation)
+		path = new LinkedList<Point>();
+		path.add(startPoint);
+		
+		//	Generate a random path from beginning to end
+		generateCorrectPath(startPoint.x, startPoint.y, endPoint.x, endPoint.y);	
+		
+		//	Add final point to the linked list
+		path.add(endPoint);
+		
+		//	Instantiate linked list iterator
+		it = path.iterator();
+		
+		//	Generate dead-ends
+		generateDeadEnds(startPoint.x, startPoint.y);
+		
+		//	Finally, print the beginning and end
+		maze[startPoint.x][startPoint.y] = 2;
+		maze[endPoint.x][endPoint.y] = 3;
+	}
+	
+	/**
+	 * Prints the contents of a maze to console
+	 */
+	public void printMaze() {
+		for(int i = 0; i < x; i++) {
+			for(int j = 0; j < y; j++) {
+				System.out.print(maze[i][j] + "   ");
+				if(j == y - 1) {
+					System.out.println("\n");
+				}
+			}
+		}
+	}
+	
+	//	Utility methods for maze generation
+	
+	/**
+	 * Loop method: Generates a random path from starting point to ending point
+	 * 
+	 * @param startX
+	 * @param startY
+	 * @param endX
+	 * @param endY
+	 */
+	private void generateCorrectPath(int startX, int startY, int endX, int endY) {
 		
 		//	Set coordinates for current position (Same as starting point)
 		int currentX = startX;
 		int currentY = startY;
 		
-		//	Create a linked list of coordinate points for true path (used for dead-end generation)
-		path = new LinkedList<Point>();
-		path.add(new Point(startX, startY));
-		
-		//	Generate a random path from beginning to end
 		while(!(currentX == endX && currentY == endY)) {
 			if((rand.nextInt(2) == 0) && (currentY + 1 <= endY)) {
 				currentY ++;
@@ -102,33 +140,7 @@ public class Maze {
 				}
 			}
 		}
-		
-		//	Add end point to linked list
-		path.add(new Point(endX, endY));
-		
-		//	Instantiate linked list iterator
-		it = path.iterator();
-		
-		//	Generate dead-ends
-		generateDeadEnds(startX, startY);
-		
 	}
-	
-	/**
-	 * Prints the contents of a maze to console
-	 */
-	public void printMaze() {
-		for(int i = 0; i < x; i++) {
-			for(int j = 0; j < y; j++) {
-				System.out.print(maze[i][j] + "  ");
-				if(j == y - 1) {
-					System.out.println("\n");
-				}
-			}
-		}
-	}
-	
-	//	Utility methods for maze generation
 	
 	/**
 	 * Recursively checks and prints paths that do not lead to the end
@@ -142,7 +154,7 @@ public class Maze {
 	 */
 	private void generateDeadEnds(int x, int y) {
 		//	End condition
-		if(x == endX && y == endY) {
+		if(x == endPoint.x && y == endPoint.y) {
 			return;
 		} else {
 			//	Random cardinal direction
@@ -192,10 +204,14 @@ public class Maze {
 				}
 			}
 			
-			//	Recursive call. Check if path was printed. If not, go to next point iterator.
+			//	Recursive call. Check if path was printed. If not, create a "treasure" point and go to next point iterator.
 			if(pathPrinted) {
+				
+				//	Recursive call
 				generateDeadEnds(printedPoint.x, printedPoint.y);
 			} else {
+				
+				//	Go to linked list iterator point
 				Point temp = it.next();
 				generateDeadEnds(temp.x, temp.y);
 			}
@@ -245,8 +261,14 @@ public class Maze {
 			
 			//	Skip iteration if direction is equal to prevX and prevY
 			if(!(wtgX == prevX && wtgY == prevY)) {
-				if(maze[wtgX][wtgY] == 1) {
-					//	Coordinate is not viable. Return false.
+				try {
+					if(maze[wtgX][wtgY] == 1) {
+						//	Coordinate is not viable. Return false.
+						isViable = false;
+						break;
+					}
+				} catch (IndexOutOfBoundsException ee) {
+					//	Coordinate is bot viable. Return false.
 					isViable = false;
 					break;
 				}
