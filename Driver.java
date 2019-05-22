@@ -17,10 +17,12 @@ public class Driver {
 	 */
 	public static void main(String[] args) {
 		try {
-			if (args.length == 3 || args.length == 4) {
+			if (args.length == 4 || args.length == 5) {
 				//	Variables
 				int x = -1;
 				int y = -1;
+				double treasureChance = -1;
+				double enemyChance = -1;
 				Maze m = null;
 				
 				//	Parse x value
@@ -39,27 +41,32 @@ public class Driver {
 					printUsageAndExit();
 				}
 				
-				//	Create intArray and Maze object
-				int[][] intArray = new int[x][y];
-				
 				//	Parse treasure chance
 				if(Double.valueOf(args[2]) >= 0 || Double.valueOf(args[2]) <= 1) {
-					
+					treasureChance = Double.valueOf(args[2]);
 				} else {
 					System.err.println("ERROR: Treasure rate must be a decimal value between 0 and 1 (inclusive). You entered " + Integer.valueOf(args[2]));
 					printUsageAndExit();
 				}
 				
+				//	Parse enemy chance
+				if(Double.valueOf(args[3]) >= 0 || Double.valueOf(args[3]) <= 1) {
+					enemyChance = Double.valueOf(args[3]);
+				} else {
+					System.err.println("ERROR: Enemy rate must be a decimal value between 0 and 1 (inclusive). You entered " + Integer.valueOf(args[2]));
+					printUsageAndExit();
+				}
+				
 				//	Parse optional seed value or create maze without seed
-				if(args.length == 4) {
-					if(Integer.valueOf(args[3]) > 0) {
-						m = new Maze(intArray, Double.valueOf(args[2]), Integer.valueOf(args[3]));
+				if(args.length == 5) {
+					if(Integer.valueOf(args[4]) > 0) {
+						m = new Maze(x, y, treasureChance, enemyChance, Integer.valueOf(args[4]));
 					} else {
 						System.err.println("ERROR: Seed value must be greater than 0. You entered " + Integer.valueOf(args[3]));
 						printUsageAndExit();
 					}
 				} else {
-					m = new Maze(intArray, Double.valueOf(args[2]), -1);
+					m = new Maze(x, y, treasureChance, enemyChance, -1);
 				}
 				
 				//	Generate the maze
@@ -69,7 +76,7 @@ public class Driver {
 				m.printMaze();
 				
 			} else {
-				System.err.println("ERROR: Your argument length must either be 2 or 3. Your argument length was " + args.length);
+				System.err.println("ERROR: Your argument length must either be 4 or 5. Your argument length was " + args.length);
 				printUsageAndExit();
 			}
 		} catch (Exception e) {

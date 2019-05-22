@@ -12,6 +12,8 @@ import java.util.Random;
  * 1 = Accessible
  * 2 = Start
  * 3 = End
+ * 4 = Treasure Chest
+ * 5 = Enemy Spawn
  * 
  * @author becer
  *
@@ -26,8 +28,9 @@ public class Maze {
 	//	Random object
 	private Random rand;
 	
-	//	Chance of a point becoming a "treasure" point
+	//	Chance of a point becoming a "treasure" or "enemy" point
 	private double treasureChance;
+	private double enemyChance;
 	
 	//	Maze linked list of points
 	private LinkedList<Point> path;
@@ -48,13 +51,17 @@ public class Maze {
 	 * 
 	 * @param maze
 	 */
-	public Maze(int[][] maze, double treasureChance, int seed) {
-		this.maze = maze;
-		this.treasureChance = treasureChance;
-		x = maze.length;
-		y = maze[0].length;
+	public Maze(int x, int y, double treasureChance, double enemyChance, int seed) {
+		//	For int array
+		this.x = x;
+		this.y = y;
+		this.maze = new int[x][y];
 		
-		//		Instantiates random object
+		//	For chance of certain objects
+		this.treasureChance = treasureChance;
+		this.enemyChance = enemyChance;
+		
+		//	Instantiates random object
 		if(seed == -1) {
 			rand = new Random();
 		} else {
