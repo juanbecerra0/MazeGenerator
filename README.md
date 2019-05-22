@@ -1,7 +1,7 @@
 # Java Maze Generator
 
 A small java program that generates a maze with a beginning and end given x and y dimensions and an
-optional seed value.
+optional seed value. This project will later be translated to C++.
 
-This is to be used in my game, Revenants: The Endless Dungeon to create procedurely-generated levels.
-This project will later be translated to C++.
+This algorithms will be used in my video game, Revenants. Repository can be found here:
+https://github.com/juanbecerra0/Revenants-Game
