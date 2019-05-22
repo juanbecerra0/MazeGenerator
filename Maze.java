@@ -109,6 +109,15 @@ public class Maze {
 		}
 	}
 	
+	/**
+	 * Gets the 2D integer array associated with the maze object
+	 * 
+	 * @return 2D int array
+	 */
+	public int[][] getArray() {
+		return maze;
+	}
+	
 	//	Utility methods for maze generation
 	
 	/**
