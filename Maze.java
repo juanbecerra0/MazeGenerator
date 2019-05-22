@@ -88,14 +88,18 @@ public class Maze {
 		//	Generate a random path from beginning to end
 		generateCorrectPath(startPoint.x, startPoint.y, endPoint.x, endPoint.y);	
 		
-		//	Add final point to the linked list
+		//	Add final point to the linked list and instantiate the iterator
 		path.add(endPoint);
-		
-		//	Instantiate linked list iterator
 		it = path.iterator();
 		
 		//	Generate dead-ends
 		generateDeadEnds(startPoint.x, startPoint.y);
+		
+		//	Generate treasure
+		generateTreasure();
+		
+		//	Generate enemies
+		generateEnemies();
 		
 		//	Finally, print the beginning and end
 		maze[startPoint.x][startPoint.y] = 2;
@@ -293,5 +297,39 @@ public class Maze {
 		
 		//	Return value
 		return isViable;
+	}
+	
+	/**
+	 * Generates treasure chests based off of the treasure chance
+	 * 
+	 * Treasure = 4
+	 */
+	private void generateTreasure() {
+		for(int i = 0; i < x; i++) {
+			for(int j = 0; j < y; j++) {
+				if(treasureChance > rand.nextDouble()
+						&& maze[i][j] == 1) {
+					maze[i][j] = 4;
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Generates enemies based off of the enemy chance
+	 * 
+	 * Enemies = 5
+	 */
+	private void generateEnemies() {
+		for(int i = 0; i < x; i++) {
+			for(int j = 0; j < y; j++) {
+				if(enemyChance > rand.nextDouble()
+						&& maze[i][j] == 1
+						&& i != startPoint.x
+						&& j != startPoint.y) {
+					maze[i][j] = 5;
+				}
+			}
+		}
 	}
 }
